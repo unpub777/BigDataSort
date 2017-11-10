@@ -13,7 +13,7 @@ namespace BigDataSort
 			Registry();
 
 			var processor = new SortingProcessor(input, output, chunkSize, DependencyContainer.Resolve<IObjectManager<string>>());
-			processor.Sort();
+			processor.SortAsync().Wait();
 		}
 
 		private static void Registry()

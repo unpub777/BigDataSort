@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TestSorting.Sorting;
 
@@ -26,10 +25,13 @@ namespace BigDataSort
 		}
 
 		//TO DO async
-		public void Sort()
+		public async Task SortAsync()
 		{
-			DivideToChunks();
-			Process();
+			await Task.Run(() =>
+			{
+				DivideToChunks();
+				Process();
+			}).ConfigureAwait(false);
 		}
 
 		private void DivideToChunks()
@@ -56,28 +58,40 @@ namespace BigDataSort
 					{
 						second = pointers.ElementAt(i + 1);
 					}
+					if (first != null && second != null)
+					{
+						Merge(first, second, steep, i / 2 + i % 2, pointers.Count() <= 2 ? _output : null);
+					}
+					else
+					{
+						Copy(first, steep, i / 2 + i % 2);
+					}
 				}
-
+				_manager.DeleteChunksBySteep(steep - 1);
 				pointers = _manager.GetChunkPointersBySteep(steep++);
 			}
 		}
 
-		private void Merge(string firstPointer, string secondPointer, int steep, int chunkNumber)
+		private void Merge(string firstPointer, string secondPointer, int steep, int chunkNumber, string output = null)
 		{
-			if (firstPointer != null)
+			if (firstPointer != null && secondPointer != null)
 			{
-				if (secondPointer != null)
+				using (var first = _manager.GetReader(firstPointer))
+				using (var second = _manager.GetReader(secondPointer))
+				using (var writer = output != null ? _manager.GetWriter(output) : _manager.GetWriter(steep, chunkNumber))
 				{
-					using (var first = _manager.GetReader(firstPointer))
-					using (var second = _manager.GetReader(secondPointer))
-					using (var writer = _manager.GetWriter(steep, chunkNumber))
+					string data1 = null; string data2 = second.Read();
+					while (!first.IsEnd || !second.IsEnd)
 					{
-
+						data1 = first.Read();
+						while (!second.IsEnd && _comparer.Compare(data1, data2) >= 0)
+						{
+							writer.Write(data2);
+							data2 = second.Read();
+						}
+						writer.Write(data1);
 					}
-				}
-				else
-				{
-					Copy(firstPointer, steep, chunkNumber);
+					writer.Write(data2);
 				}
 			}
 		}

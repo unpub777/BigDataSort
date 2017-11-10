@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,6 +7,16 @@ namespace BigDataSort
 {
 	public class FileManager : IObjectManager<string>
 	{
+		public void DeleteChunksBySteep(int steep)
+		{
+			var result = new List<string>();
+
+			var pattern = $"{steep}_[0-9]+";
+			var files = Directory.GetFiles(".");
+			result.AddRange(files.Where(f => Regex.IsMatch(f, pattern)));
+			result.ForEach(f => File.Delete(f));
+		}
+
 		public IEnumerable<string> GetChunkPointersBySteep(int steep)
 		{
 			var result = new List<string>();

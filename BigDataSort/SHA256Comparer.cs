@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,21 +11,33 @@ namespace BigDataSort
 		public int Compare(string x, string y)
 		{
 			int result = 0;
-			var sha256X = sha256.ComputeHash(Encoding.UTF8.GetBytes(x));
-			var sha256Y = sha256.ComputeHash(Encoding.UTF8.GetBytes(y));
 
-			for (int i = 0; i < sha256X.Length; i++)
+			if (x != null && y != null)
 			{
-				if (sha256X[i] > sha256Y[i])
+				var sha256X = sha256.ComputeHash(Encoding.UTF8.GetBytes(x));
+				var sha256Y = sha256.ComputeHash(Encoding.UTF8.GetBytes(y));
+
+				for (int i = 0; i < sha256X.Length; i++)
 				{
-					result = 1;
-					break;
+					if (sha256X[i] > sha256Y[i])
+					{
+						result = 1;
+						break;
+					}
+					else if (sha256Y[i] > sha256X[i])
+					{
+						result = -1;
+						break;
+					}
 				}
-				else if (sha256Y[i] > sha256X[i])
-				{
-					result = -1;
-					break;
-				}
+			}
+			else if (y == null && x != null)
+			{
+				result = -1;
+			}
+			else if (x == null && y != null)
+			{
+				result = 1;
 			}
 
 			return result;
