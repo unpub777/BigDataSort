@@ -25,7 +25,7 @@ namespace BigDataSort
 			var files = Directory.GetFiles(".");
 			result.AddRange(files.Where(f => Regex.IsMatch(f, pattern)));
 
-			return result;
+			return result.OrderBy(f => f, new FileSortingComparer());
 		}
 
 		public IDataReader<string> GetReader(string chunkPointer)

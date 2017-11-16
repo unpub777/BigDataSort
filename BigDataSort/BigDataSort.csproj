@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyContainer.cs" />
+    <Compile Include="IO\FileSortingComparer.cs" />
     <Compile Include="IO\DataReader.cs" />
     <Compile Include="IO\DataWriter.cs" />
     <Compile Include="IO\IDataReader.cs" />
