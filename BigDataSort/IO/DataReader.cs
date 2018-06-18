@@ -21,7 +21,7 @@ namespace BigDataSort
 		{
 			_stream = stream;
 		}
-		public IEnumerable<string> ReadChunk(int size)
+		public IEnumerable<string> ReadChunk(long size)
 		{
 			var result = new List<string>();
 

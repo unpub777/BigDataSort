@@ -7,25 +7,21 @@ namespace BigDataSort
 {
 	public class FileManager : IObjectManager<string>
 	{
-		public void DeleteChunksBySteep(int steep)
+		public void DeleteChunksBySteep(long steep)
 		{
-			var result = new List<string>();
-
 			var pattern = $"{steep}_[0-9]+";
-			var files = Directory.GetFiles(".");
-			result.AddRange(files.Where(f => Regex.IsMatch(f, pattern)));
-			result.ForEach(f => File.Delete(f));
+			var files = Directory.GetFiles(".").Where(f => Regex.IsMatch(f, pattern));
+			foreach(var file in files)
+			{
+				File.Delete(file);
+			}
 		}
 
-		public IEnumerable<string> GetChunkPointersBySteep(int steep)
+		public IEnumerable<string> GetChunkPointersBySteep(long steep)
 		{
-			var result = new List<string>();
-
 			var pattern = $"{steep}_[0-9]+";
 			var files = Directory.GetFiles(".");
-			result.AddRange(files.Where(f => Regex.IsMatch(f, pattern)));
-
-			return result.OrderBy(f => f, new FileSortingComparer());
+			return files.Where(f => Regex.IsMatch(f, pattern)).OrderBy(f => f, new FileSortingComparer());
 		}
 
 		public IDataReader<string> GetReader(string chunkPointer)
@@ -35,7 +31,7 @@ namespace BigDataSort
 			return result;
 		}
 
-		public IDataReader<string> GetReader(int steep, int chunkNumber)
+		public IDataReader<string> GetReader(long steep, long chunkNumber)
 		{
 			var fullName = $"{steep}_{chunkNumber}.txt";
 			return GetReader(fullName);
@@ -48,7 +44,7 @@ namespace BigDataSort
 			return result;
 		}
 
-		public IDataWriter<string> GetWriter(int steep, int chunkNumber)
+		public IDataWriter<string> GetWriter(long steep, long chunkNumber)
 		{
 			var fullName = $"{steep}_{chunkNumber}.txt";
 			return GetWriter(fullName);

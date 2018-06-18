@@ -10,11 +10,11 @@ namespace BigDataSort
 	{
 		string _input;
 		string _output;
-		int _chunkSize;
+		long _chunkSize;
 		IObjectManager<string> _manager;
 		IComparer<string> _comparer;
 
-		public SortingProcessor(string input, string output, int chunkSize, IObjectManager<string> manager)
+		public SortingProcessor(string input, string output, long chunkSize, IObjectManager<string> manager)
 		{
 			_input = input;
 			_output = output;
@@ -45,22 +45,22 @@ namespace BigDataSort
 		}
 		private void Process()
 		{
-			int steep = 0;
-			var pointers = _manager.GetChunkPointersBySteep(steep++);
+			long steep = 0;
+			var pointers = _manager.GetChunkPointersBySteep(steep++).ToArray();
 
-			while (pointers.Any())
+			while (pointers.Length > 0)
 			{
-				for (int i = 0; i < pointers.Count(); i += 2)
+				for (int i = 0; i < pointers.Length; i += 2)
 				{
-					var first = pointers.ElementAt(i);
+					var first = pointers[i];
 					string second = null;
-					if (i + 1 < pointers.Count())
+					if (i + 1 < pointers.Length)
 					{
-						second = pointers.ElementAt(i + 1);
+						second = pointers[i + 1];
 					}
 					if (first != null && second != null)
 					{
-						Merge(first, second, steep, i / 2 + i % 2, pointers.Count() <= 2 ? _output : null);
+						Merge(first, second, steep, i / 2 + i % 2, pointers.Length <= 2 ? _output : null);
 					}
 					else
 					{
@@ -68,11 +68,11 @@ namespace BigDataSort
 					}
 				}
 				_manager.DeleteChunksBySteep(steep - 1);
-				pointers = _manager.GetChunkPointersBySteep(steep++);
+				pointers = _manager.GetChunkPointersBySteep(steep++).ToArray();
 			}
 		}
 
-		private void Merge(string firstPointer, string secondPointer, int steep, int chunkNumber, string output = null)
+		private void Merge(string firstPointer, string secondPointer, long steep, long chunkNumber, string output = null)
 		{
 			if (firstPointer != null && secondPointer != null)
 			{
@@ -96,7 +96,7 @@ namespace BigDataSort
 			}
 		}
 
-		private void Copy(string sourcePointer, int destinationSteep, int destinationChunkNumber, Func<IEnumerable<string>, IEnumerable<string>> action = null)
+		private void Copy(string sourcePointer, long destinationSteep, long destinationChunkNumber, Func<IEnumerable<string>, IEnumerable<string>> action = null)
 		{
 			using (var reader = _manager.GetReader(sourcePointer))
 			{

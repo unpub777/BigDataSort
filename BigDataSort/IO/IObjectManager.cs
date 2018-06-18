@@ -4,11 +4,11 @@ namespace BigDataSort
 {
 	public interface IObjectManager<T>
 	{
-		void DeleteChunksBySteep(int steep);
-		IEnumerable<string> GetChunkPointersBySteep(int steep);
+		void DeleteChunksBySteep(long steep);
+		IEnumerable<string> GetChunkPointersBySteep(long steep);
 		IDataReader<T> GetReader(string chunkPointer);
-		IDataReader<T> GetReader(int steep, int chunkNumber);
+		IDataReader<T> GetReader(long steep, long chunkNumber);
 		IDataWriter<T> GetWriter(string chunkPointer);
-		IDataWriter<T> GetWriter(int steep, int chunkNumber);
+		IDataWriter<T> GetWriter(long steep, long chunkNumber);
 	}
 }
